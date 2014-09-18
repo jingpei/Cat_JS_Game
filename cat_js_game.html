@@ -62,7 +62,7 @@
 	var manPos = 225;
 	var isMoving = false;
 	var currDir;
-	var yarnPos = getRandomInt(width-width, width);
+	var yarnPos = getRandomInt(width-width, width-catstandImage.height);
 	var yarnDir = getYarnDir(yarnPos);
 	
 	logoImage.src = "Images/logo.png";
@@ -114,6 +114,23 @@
 
 	document.addEventListener("keydown", keyDownHandler, false);
 	document.addEventListener("keyup", keyUpHandler, false);
+	canvas.addEventListener("mousedown", mouseDownHandler, false);
+
+	function mouseDownHandler(event){
+		var x = event.x;
+	  	var y = event.y;
+
+	  	x -= canvas.offsetLeft;
+	  	y -= canvas.offsetTop;
+
+	  	if (manPos< x && x < manPos+catImageRt.width && height-115 < y && y < height-115+catImageRt.height){
+	  		if (timer % 2 == 0){
+	  			alert("PUURRRRRR!!!");
+	  		}else{
+	  			alert("Meow meow meow MEOOWWWW!!");
+	  		}
+	  	}
+	};
 
 	function keyDownHandler(event){
 		whatKey = event.which;
@@ -177,7 +194,7 @@
 			dirYarnArray = yarnLftArray;
 			if(timer % 2 == 0){
 				yarnPos--;
-				if (yarnPos < 0){
+				if (yarnPos < 0 || yarnPos == manPos + catstandImage.width){
 					yarnPos=yarnPos+5;
 					yarnDir = DIR.RIGHT;
 				}
@@ -186,7 +203,7 @@
 			dirYarnArray = yarnRtArray;			
 			if(timer % 2 == 0){
 				yarnPos++;
-				if (yarnPos > width - yarnoneImageRt.width){
+				if (yarnPos > width - yarnoneImageRt.width || yarnPos + yarnoneImageRt.width == manPos){
 					yarnPos=yarnPos-5;
 					yarnDir = DIR.LEFT;
 				}
@@ -216,6 +233,10 @@
 			else if(isMoving == false)
 				context.drawImage(dirCatArray[3], manPos, height-115);
 		//}
+	};
+
+	function detectCollision{
+
 	};
 
 </script>
