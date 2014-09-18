@@ -25,10 +25,22 @@
 	var width = Number(canvas.getAttribute("width"));
 	var height = Number(canvas.getAttribute("height"));
 
+	//Static images
 	var logoImage = new Image();
 	var playImage = new Image();
 	var helpImage = new Image();
 	var grassImage = new Image();
+	
+	//interactive images
+	var yarnoneImageLft = new Image();
+	var yarntwoImageLft = new Image();
+	var yarnoneImageRt = new Image();
+	var yarntwoImageRt = new Image();
+	var yarnRtArray = [yarnoneImageRt, yarntwoImageRt];
+	var yarnLftArray = [yarnoneImageLft, yarntwoImageLft];
+	var dirYarnArray;
+
+	//subject images
 	var catImageRt = new Image();
 	var cattwoImageRt = new Image();
 	var catthreeImageRt = new Image();
@@ -42,14 +54,17 @@
 
 	var whatKey;
 
-	var manPos = 225;
-	var isMoving = false;
-	var currDir;
 	var DIR = {
 		LEFT: "left",
 		RIGHT: "right",
 	};
 
+	var manPos = 225;
+	var isMoving = false;
+	var currDir;
+	var yarnPos = getRandomInt(width-width, width);
+	var yarnDir = getYarnDir(yarnPos);
+	
 	logoImage.src = "Images/logo.png";
 	logoImage.onload = function(){
 		context.drawImage(logoImage, 100, 0);
@@ -66,6 +81,19 @@
 	grassImage.onload = function(){
 		context.drawImage(grassImage, 0, height-grassImage.height);
 	};
+	yarnoneImageLft.src = "Images/yarnonelft.png";
+	yarnoneImageRt.src = "Images/yarnonert.png";
+
+	if (yarnDir == DIR.LEFT){
+		yarnoneImageLft.onload = function(){
+		context.drawImage(yarnoneImageLft, yarnPos, height-70);
+		};
+	} else{
+		yarnoneImageRt.onload = function(){
+			context.drawImage(yarnoneImageRt, yarnPos, height-70)
+		};
+	}
+
 	catstandImage.src = "Images/catstand.png";
 	catstandImage.onload = function(){
 		context.drawImage(catstandImage, (width-catstandImage.width)/2, height-115);
@@ -77,6 +105,9 @@
 	catImageLft.src = "Images/catbacklft.png";
 	cattwoImageLft.src = "Images/catoutlft.png";
 	catthreeImageLft.src = "Images/catfrontlft.png";
+
+	yarntwoImageLft.src = "Images/yarntwolft.png";
+	yarntwoImageRt.src = "Images/yarntwort.png";
 
 	setInterval(update, 1000/24);
 	timer = 1;
@@ -92,7 +123,7 @@
 			isMoving = true;
 			currDir = DIR.LEFT;
 			if (manPos < width-width)
-				manPos = manPos + 5;
+				manPos = manPos + 10;
 		}
 
 		if(whatKey == 39){ 
@@ -100,7 +131,7 @@
 			isMoving = true;
 			currDir = DIR.RIGHT;
 			if (manPos > width-catstandImage.width)
-				manPos = manPos - 5;
+				manPos = manPos - 10;
 		}
 
 		event.preventDefault();
@@ -114,10 +145,21 @@
 		}
 	};
 
+	function getRandomInt (min, max) {
+    	return Math.floor(Math.random() * (max - min + 1)) + min;
+	};
+
+	function getYarnDir(x){
+		if (x > width/2){
+			return DIR.RIGHT;
+		}else{
+			return DIR.LEFT;
+		}
+	};
 	function update(){
 		clear();
-		draw();
 		timer++;
+		draw();
 	};
 
 	function clear(){
@@ -131,11 +173,40 @@
 			dirCatArray = catRtArray;
 		}
 
+		if(yarnDir == DIR.LEFT){
+			dirYarnArray = yarnLftArray;
+			if(timer % 2 == 0){
+				yarnPos--;
+				if (yarnPos < 0){
+					yarnPos=yarnPos+5;
+					yarnDir = DIR.RIGHT;
+				}
+			}
+		}else{
+			dirYarnArray = yarnRtArray;			
+			if(timer % 2 == 0){
+				yarnPos++;
+				if (yarnPos > width - yarnoneImageRt.width){
+					yarnPos=yarnPos-5;
+					yarnDir = DIR.LEFT;
+				}
+			}
+		}
+
 		//for (var i=0; i<dirCatArray.length-1; i++){
 			context.drawImage(logoImage, 100, 25);
 			context.drawImage(playImage, (width-playImage.width)/2, 200);
 			context.drawImage(helpImage, (width-helpImage.width)/2, 260);
 			context.drawImage(grassImage, 0, height-grassImage.height);
+			
+			if(yarnPos%2 == 0){
+				context.drawImage(dirYarnArray[0], yarnPos, height-70);
+			}else{
+				context.drawImage(dirYarnArray[1], yarnPos, height-70);
+			}
+
+
+
 			if(timer % 3 == 1 && isMoving == true)
 				context.drawImage(dirCatArray[2], manPos, height-115);  
 			else if(timer % 3 == 2 && isMoving == true)
